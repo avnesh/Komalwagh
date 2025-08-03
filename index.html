@@ -46,18 +46,26 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
         
-        /* Subtle Gradient Background */
-        body::before {
-            content: '';
+        /* --- Animated Background Canvases --- */
+        .background-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            height: 100vh;
-            width: 100vw;
+            width: 100%;
+            height: 100%;
             z-index: -20;
-            background: radial-gradient(ellipse at top, var(--bg-secondary), var(--bg-primary) 70%);
-            transition: background 0.5s ease;
+            display: none; /* Hidden by default */
         }
+        
+        html:not(.dark) #hallucination-canvas {
+            display: block; /* Only show in light mode */
+            opacity: 0.7;
+        }
+        html.dark #vortex-canvas {
+            display: block; /* Only show in dark mode */
+            background-color: #000;
+        }
+
 
         /* --- WOW Effects --- */
         .animated-gradient-text {
@@ -124,17 +132,52 @@
             opacity: 1;
         }
 
-
         /* Mobile Menu Overlay */
         #mobile-menu {
             transition: opacity 0.3s ease-in-out;
-            background-color: var(--bg-primary);
         }
+
+        /* --- Glassmorphism & Transparency --- */
+        .content-card,
+        header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        html:not(.dark) .content-card,
+        html:not(.dark) header {
+            background-color: rgba(255, 255, 255, 0.7); /* Light glass */
+        }
+        html.dark .content-card,
+        html.dark header {
+            background-color: rgba(31, 41, 55, 0.6); /* Dark glass */
+        }
+
+        footer {
+            background-color: transparent !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        
+        #mobile-menu {
+             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        html:not(.dark) #mobile-menu {
+            background-color: rgba(243, 244, 246, 0.8);
+        }
+        html.dark #mobile-menu {
+            background-color: rgba(17, 24, 39, 0.8);
+        }
+
     </style>
 </head>
 <body>
+    <!-- Animated Background Canvases -->
+    <canvas id="hallucination-canvas" class="background-canvas"></canvas>
+    <canvas id="vortex-canvas" class="background-canvas"></canvas>
+
     <!-- Header & Navigation -->
-    <header class="bg-[var(--bg-secondary)] shadow-md sticky top-0 z-40 border-b border-[var(--border-color)]">
+    <header class="shadow-md sticky top-0 z-40 border-b border-[var(--border-color)]">
         <div class="container mx-auto px-4 sm:px-6">
             <nav class="py-4 flex justify-between items-center">
                 <a href="#about" class="text-2xl font-bold text-[var(--text-primary)]">Komal Wagh</a>
@@ -321,7 +364,7 @@
         </section>
     </main>
 
-    <footer id="contact" class="bg-[var(--bg-secondary)] text-[var(--text-primary)] mt-16 border-t border-[var(--border-color)]">
+    <footer id="contact" class="text-[var(--text-primary)] mt-16 border-t border-[var(--border-color)]">
         <div class="container mx-auto px-4 sm:px-6 py-16 text-center">
             <h2 class="text-4xl font-bold mb-4">Ready to Build Quality?</h2>
             <p class="max-w-2xl mx-auto mb-8 text-[var(--text-secondary)]">
@@ -351,10 +394,156 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- Light Mode: Hallucination Background ---
+        const hallucinationCanvas = document.getElementById('hallucination-canvas');
+        const h_ctx = hallucinationCanvas.getContext('2d');
+        let h_animationFrameId = null;
+        let h_walkers = [];
+
+        function resizeHallucinationCanvas() {
+            hallucinationCanvas.width = window.innerWidth;
+            hallucinationCanvas.height = window.innerHeight;
+        }
+
+        class Walker {
+            constructor() {
+                this.x = Math.random() * hallucinationCanvas.width;
+                this.y = Math.random() * hallucinationCanvas.height;
+                this.hue = Math.random() * 360;
+            }
+            step() {
+                this.x += Math.random() * 4 - 2;
+                this.y += Math.random() * 4 - 2;
+                this.hue += 0.5;
+                if (this.x > hallucinationCanvas.width) this.x = 0;
+                if (this.x < 0) this.x = hallucinationCanvas.width;
+                if (this.y > hallucinationCanvas.height) this.y = 0;
+                if (this.y < 0) this.y = hallucinationCanvas.height;
+                h_ctx.strokeStyle = `hsla(${this.hue}, 100%, 70%, 0.5)`;
+                h_ctx.beginPath();
+                h_ctx.moveTo(this.x, this.y);
+                h_ctx.lineTo(this.x + Math.random() * 20 - 10, this.y + Math.random() * 20 - 10);
+                h_ctx.stroke();
+            }
+        }
+
+        function setupHallucination() {
+            h_walkers = [];
+            const walkerCount = Math.floor(hallucinationCanvas.width / 50);
+            for (let i = 0; i < walkerCount; i++) {
+                h_walkers.push(new Walker());
+            }
+        }
+
+        function animateHallucination() {
+            h_walkers.forEach(walker => walker.step());
+            h_animationFrameId = requestAnimationFrame(animateHallucination);
+        }
+
+        function startHallucinationAnimation() {
+            if (h_animationFrameId) return;
+            resizeHallucinationCanvas();
+            setupHallucination();
+            h_ctx.lineWidth = 2;
+            h_ctx.globalCompositeOperation = 'lighter';
+            animateHallucination();
+        }
+
+        function stopHallucinationAnimation() {
+            if (h_animationFrameId) {
+                cancelAnimationFrame(h_animationFrameId);
+                h_animationFrameId = null;
+                h_ctx.clearRect(0, 0, hallucinationCanvas.width, hallucinationCanvas.height);
+            }
+        }
+
+        // --- Dark Mode: Vortex Background ---
+        const vortexCanvas = document.getElementById('vortex-canvas');
+        const v_ctx = vortexCanvas.getContext('2d');
+        let v_animationFrameId = null;
+        let circles = [];
+        let angle = 0;
+
+        function resizeVortexCanvas() {
+            vortexCanvas.width = window.innerWidth;
+            vortexCanvas.height = window.innerHeight;
+        }
+
+        class Circle {
+            constructor(radius) {
+                this.radius = radius;
+            }
+            draw(centerX, centerY) {
+                v_ctx.beginPath();
+                v_ctx.arc(centerX, centerY, this.radius, 0, 2 * Math.PI);
+                v_ctx.lineWidth = 1.5;
+                v_ctx.strokeStyle = `rgba(255, 255, 255, ${0.8 - this.radius / (vortexCanvas.width / 2)})`;
+                v_ctx.stroke();
+            }
+            update() {
+                this.radius += 0.5;
+                if (this.radius > vortexCanvas.width / 2) {
+                    this.radius = 0;
+                }
+            }
+        }
+
+        function setupVortex() {
+            circles = [];
+            for (let i = 0; i < 50; i++) {
+                circles.push(new Circle(i * 20));
+            }
+        }
+
+        function animateVortex() {
+            v_ctx.clearRect(0, 0, vortexCanvas.width, vortexCanvas.height);
+            const centerX = vortexCanvas.width / 2;
+            const centerY = vortexCanvas.height / 2;
+            
+            v_ctx.save();
+            v_ctx.translate(centerX, centerY);
+            v_ctx.rotate(angle);
+            v_ctx.translate(-centerX, -centerY);
+
+            circles.forEach(circle => {
+                circle.update();
+                circle.draw(centerX, centerY);
+            });
+            
+            v_ctx.restore();
+            angle += 0.001;
+            v_animationFrameId = requestAnimationFrame(animateVortex);
+        }
+
+        function startVortexAnimation() {
+            if (v_animationFrameId) return;
+            resizeVortexCanvas();
+            setupVortex();
+            animateVortex();
+        }
+        
+        function stopVortexAnimation() {
+             if (v_animationFrameId) {
+                cancelAnimationFrame(v_animationFrameId);
+                v_animationFrameId = null;
+                v_ctx.clearRect(0, 0, vortexCanvas.width, vortexCanvas.height);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+             if (document.documentElement.classList.contains('dark')) {
+                stopVortexAnimation();
+                startVortexAnimation();
+             } else {
+                stopHallucinationAnimation();
+                startHallucinationAnimation();
+             }
+        });
+
+
         // --- Theme Management ---
         const desktopThemeToggle = document.getElementById('theme-toggle');
         const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
-        // It's safer to clone the icons to avoid issues with event listeners
         const sunIconHTML = desktopThemeToggle.querySelector('#theme-icon-sun').cloneNode(true);
         const moonIconHTML = desktopThemeToggle.querySelector('#theme-icon-moon').cloneNode(true);
         mobileThemeToggle.appendChild(sunIconHTML);
@@ -370,10 +559,14 @@
                 document.documentElement.classList.add('dark');
                 moonIcons.forEach(el => el.classList.remove('hidden'));
                 sunIcons.forEach(el => el.classList.add('hidden'));
+                stopHallucinationAnimation();
+                startVortexAnimation();
             } else {
                 document.documentElement.classList.remove('dark');
                 moonIcons.forEach(el => el.classList.add('hidden'));
                 sunIcons.forEach(el => el.classList.remove('hidden'));
+                stopVortexAnimation();
+                startHallucinationAnimation();
             }
         };
 
