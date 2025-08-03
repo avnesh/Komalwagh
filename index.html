@@ -92,8 +92,7 @@
         /* --- Scroller for Skills --- */
         .scroller {
             overflow-x: auto; /* Enable horizontal scrolling */
-            padding-top: 1rem; /* Add padding to prevent hover clipping */
-            padding-bottom: 1rem;
+            padding: 1rem; /* Add padding to prevent hover clipping and edge cutting */
             -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
             scrollbar-width: none; /* Hide scrollbar for Firefox */
         }
@@ -105,22 +104,26 @@
             display: flex; 
             gap: 1rem; 
             width: max-content; 
-            animation: scroll 30s linear infinite; 
         }
-        .scroller[data-animated="true"]:hover .scroller-inner { 
-            animation-play-state: paused; 
-        }
-
-        @keyframes scroll { to { transform: translate(calc(-50% - 0.5rem)); } }
 
         /* --- Experience Accordion --- */
+        .accordion-arrow {
+            transition: transform 0.3s ease-in-out;
+        }
         .accordion-arrow.open {
             transform: rotate(90deg);
         }
         .project-details {
-            transition: all 0.4s ease-in-out;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
             overflow: hidden;
+            max-height: 0;
+            opacity: 0;
         }
+        .project-details.open {
+            max-height: 1000px; /* Set a large max-height to allow content to expand */
+            opacity: 1;
+        }
+
 
         /* Mobile Menu Overlay */
         #mobile-menu {
@@ -197,7 +200,7 @@
                 <svg class="w-8 h-8 text-[var(--accent-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                 Technical Skills & Expertise
             </h2>
-            <div class="scroller px-4" data-animated="true">
+            <div class="scroller">
                 <div class="scroller-inner">
                     <div class="content-card px-6 py-8 h-48 w-80 sm:w-96 flex-shrink-0">
                         <h3 class="text-xl font-bold text-[var(--accent-secondary)] mb-3">🧪 Testing Expertise</h3>
@@ -232,7 +235,7 @@
                 <svg class="w-8 h-8 text-[var(--accent-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 Professional Experience
             </h2>
-             <div class="relative border-l-2 border-[var(--accent-primary)] ml-4 pl-6 md:pl-10">
+             <div class="relative md:border-l-2 md:border-[var(--accent-primary)] md:pl-10">
                 <div class="timeline-item mb-12">
                     <div class="content-card p-6 md:p-8">
                         <h3 class="text-2xl font-bold text-[var(--text-primary)]">Quality Analyst</h3>
@@ -243,9 +246,9 @@
                             <div class="project-accordion">
                                 <h4 class="project-trigger flex justify-between items-center font-bold text-[var(--text-primary)] cursor-pointer md:cursor-default py-2">
                                     <span class="flex items-center gap-2"><span>🚚</span>Project: FreightGain</span>
-                                    <svg class="accordion-arrow w-4 h-4 md:hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    <svg class="accordion-arrow w-4 h-4 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 </h4>
-                                <div class="project-details hidden md:block">
+                                <div class="project-details md:!max-height-none md:!opacity-100">
                                     <div class="pl-4 pt-2 border-l-4 border-indigo-500">
                                         <ul class="list-disc list-inside space-y-2 text-[var(--text-secondary)] text-base">
                                             <li>Led QA efforts for a web-based freight forwarding platform, successfully completing testing for the Sea Freight module and currently leading the Air Freight module initiative.</li>
@@ -261,9 +264,9 @@
                             <div class="project-accordion">
                                 <h4 class="project-trigger flex justify-between items-center font-bold text-[var(--text-primary)] cursor-pointer md:cursor-default py-2">
                                      <span class="flex items-center gap-2"><span>⚕️</span>Project: Quantum Corp Health</span>
-                                     <svg class="accordion-arrow w-4 h-4 md:hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                     <svg class="accordion-arrow w-4 h-4 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 </h4>
-                                <div class="project-details hidden md:block">
+                                <div class="project-details md:!max-height-none md:!opacity-100">
                                     <div class="pl-4 pt-2 border-l-4 border-teal-500">
                                         <ul class="list-disc list-inside space-y-2 text-[var(--text-secondary)] text-base">
                                             <li>Executed end-to-end manual and database testing (SQL) on a complex HealthTech platform, validating data integrity for AI-generated reports across 700+ cities.</li>
@@ -278,9 +281,9 @@
                             <div class="project-accordion">
                                 <h4 class="project-trigger flex justify-between items-center font-bold text-[var(--text-primary)] cursor-pointer md:cursor-default py-2">
                                      <span class="flex items-center gap-2"><span>🛒</span>Project: E-commerce & CMS</span>
-                                     <svg class="accordion-arrow w-4 h-4 md:hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                     <svg class="accordion-arrow w-4 h-4 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 </h4>
-                                <div class="project-details hidden md:block">
+                                <div class="project-details md:!max-height-none md:!opacity-100">
                                     <div class="pl-4 pt-2 border-l-4 border-purple-500">
                                          <ul class="list-disc list-inside space-y-2 text-[var(--text-secondary)] text-base">
                                             <li>Performed complete end-to-end testing for 5+ client websites from requirement gathering to final delivery.</li>
@@ -437,36 +440,62 @@
             });
         });
 
-        // --- Auto-scrolling Skills Section ---
-        const scrollers = document.querySelectorAll(".scroller");
-        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            addAnimation();
-        }
-
-        function addAnimation() {
-            scrollers.forEach((scroller) => {
-                scroller.setAttribute("data-animated", true);
-                const scrollerInner = scroller.querySelector(".scroller-inner");
-                const scrollerContent = Array.from(scrollerInner.children);
-                
-                scrollerContent.forEach((item) => {
-                    const duplicatedItem = item.cloneNode(true);
-                    duplicatedItem.setAttribute("aria-hidden", true);
-                    scrollerInner.appendChild(duplicatedItem);
-                });
-            });
-        }
-
         // --- Experience Accordion for Mobile ---
-        document.querySelectorAll('.project-trigger').forEach(trigger => {
-            trigger.addEventListener('click', () => {
-                // Tailwind's 'md' breakpoint is 768px.
-                if (window.innerWidth < 768) {
-                    const details = trigger.nextElementSibling;
-                    const arrow = trigger.querySelector('.accordion-arrow');
+        const accordions = document.querySelectorAll('.project-accordion');
+        accordions.forEach(accordion => {
+            const trigger = accordion.querySelector('.project-trigger');
+            const details = accordion.querySelector('.project-details');
+            const arrow = trigger.querySelector('.accordion-arrow');
 
-                    details.classList.toggle('hidden');
+            // Set initial state for desktop view
+            if (window.innerWidth >= 768) {
+                details.classList.add('open');
+            } else {
+                details.classList.remove('open');
+            }
+
+            trigger.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    const isOpen = details.classList.contains('open');
+
+                    // Close all other accordions
+                    accordions.forEach(otherAccordion => {
+                        if (otherAccordion !== accordion) {
+                            otherAccordion.querySelector('.project-details').classList.remove('open');
+                            otherAccordion.querySelector('.accordion-arrow').classList.remove('open');
+                        }
+                    });
+
+                    // Toggle the clicked accordion
+                    details.classList.toggle('open');
                     arrow.classList.toggle('open');
+                    
+                    // Scroll to the top of the trigger if it's being opened
+                    if (!isOpen) {
+                        setTimeout(() => {
+                            const headerOffset = document.querySelector('header').offsetHeight;
+                            const elementPosition = trigger.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset - 16; // 16px for extra spacing
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }, 400); // Wait for the animation to start
+                    }
+                }
+            });
+        });
+        
+        // Adjust accordion on resize
+        window.addEventListener('resize', () => {
+            accordions.forEach(accordion => {
+                const details = accordion.querySelector('.project-details');
+                 if (window.innerWidth >= 768) {
+                    details.classList.add('open');
+                } else {
+                    // This maintains the user's open/closed choice on mobile
+                    // If you want all to be closed on resize to mobile, add: details.classList.remove('open');
                 }
             });
         });
