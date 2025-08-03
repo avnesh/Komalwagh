@@ -5,241 +5,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Komal Wagh - Interactive QA Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* --- Base & Theming --- */
+        /* --- CSS Variables for "Slate & Emerald" Theme --- */
+        :root {
+            /* --- Light Mode --- */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-secondary-rgba: rgba(255, 255, 255, 0.6);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-primary: #10b981;
+            --accent-secondary: #059669;
+            --hero-gradient-start: #10b981;
+            --hero-gradient-end: #06b6d4;
+            --glow-color: rgba(16, 185, 129, 0.5);
+            --border-color-rgba: rgba(226, 232, 240, 0.7);
+        }
+
+        html.dark {
+            /* --- Dark Mode --- */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-secondary-rgba: rgba(15, 23, 42, 0.4);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-primary: #10b981;
+            --accent-secondary: #34d399;
+            --hero-gradient-start: #10b981;
+            --hero-gradient-end: #22d3ee;
+            --glow-color: rgba(16, 185, 129, 0.6);
+            --border-color-rgba: rgba(51, 65, 85, 0.7);
+        }
+
+        /* --- Base & Transitions --- */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #eef2f7; /* A slightly richer, cool background */
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         
-        :root {
-            --qa-primary: #1e3a8a; /* Deep Blue */
-            --qa-secondary: #4f46e5; /* Indigo */
-            --qa-accent-pass: #16a34a; /* Green */
-            --qa-accent-info: #f59e0b; /* Amber */
-            --qa-accent-danger: #ef4444; /* Red */
-        }
-
-        /* --- New Solid Card Design --- */
-        .solid-card {
-            background: white;
-            border-radius: 1rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-        .solid-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        /* --- Animated Gradient Background --- */
-        #animated-bg {
+        #cosmic-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            z-index: -10;
-            background: linear-gradient(45deg, #e0e7ff, #e0f2fe, #f3e8ff, #e0e7ff);
-            background-size: 400% 400%;
-            animation: gradient-animation 15s ease infinite;
-        }
-        @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            z-index: -20;
         }
 
-        /* --- Typing Effect --- */
-        .typing::after {
-            content: '|';
-            animation: blink 1s step-end infinite;
+        /* --- WOW Effects --- */
+        .animated-gradient-text {
+            background: linear-gradient(90deg, var(--hero-gradient-start), var(--hero-gradient-end), var(--hero-gradient-start));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
         }
-        @keyframes blink {
-            from, to { color: transparent }
-            50% { color: var(--qa-accent-pass); }
-        }
-
-        /* --- Scroll Animations --- */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes gradient-flow {
+            to { background-position: 200% center; }
         }
 
-        /* --- Experience Timeline --- */
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -39px;
-            top: 0;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: var(--qa-secondary);
-            border: 4px solid #e0e7ff;
-            z-index: 1;
-            transition: transform 0.3s ease;
+        .glow-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--glow-color);
         }
-        .timeline-item:hover::before {
-            transform: scale(1.2);
+        
+        /* --- Glassmorphism Card Style --- */
+        .glass-card {
+            background-color: var(--bg-secondary-rgba);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color-rgba);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .scroller { overflow: hidden; }
+        .scroller-inner { display: flex; gap: 1rem; width: max-content; animation: scroll 30s linear infinite; }
+        .scroller[data-animated="true"]:hover .scroller-inner { animation-play-state: paused; }
 
-        /* --- Horizontal Auto-Scroller for Skills --- */
-        .scroller {
-            overflow: hidden;
-        }
-        .scroller-inner {
-            display: flex;
-            gap: 1rem;
-            width: max-content;
-            animation: scroll 30s linear infinite;
-        }
-        .scroller[data-animated="true"]:hover .scroller-inner {
-            animation-play-state: paused;
-        }
-
-        @keyframes scroll {
-            to {
-                transform: translate(calc(-50% - 0.5rem));
-            }
-        }
+        @keyframes scroll { to { transform: translate(calc(-50% - 0.5rem)); } }
     </style>
 </head>
-<body class="text-gray-800">
-    <div id="animated-bg"></div>
+<body>
+    <canvas id="cosmic-canvas"></canvas>
 
     <!-- Header & Navigation -->
-    <header class="bg-white/80 backdrop-blur-sm shadow-md sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-gray-800">Komal Wagh</a>
-            <div class="hidden md:flex space-x-6 items-center">
-                <a href="#summary" class="text-gray-600 hover:text-[var(--qa-secondary)] transition duration-300">Summary</a>
-                <a href="#skills" class="text-gray-600 hover:text-[var(--qa-secondary)] transition duration-300">Skills</a>
-                <a href="#experience" class="text-gray-600 hover:text-[var(--qa-secondary)] transition duration-300">Experience</a>
-                <a href="#education" class="text-gray-600 hover:text-[var(--qa-secondary)] transition duration-300">Education</a>
-                <a href="#contact" class="bg-[var(--qa-secondary)] text-white px-4 py-2 rounded-full hover:bg-[var(--qa-primary)] transition duration-300 shadow-lg hover:shadow-xl">Contact</a>
-            </div>
-            <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-        </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-            <a href="#summary" class="block py-2 text-gray-600 hover:text-[var(--qa-secondary)]">Summary</a>
-            <a href="#skills" class="block py-2 text-gray-600 hover:text-[var(--qa-secondary)]">Skills</a>
-            <a href="#experience" class="block py-2 text-gray-600 hover:text-[var(--qa-secondary)]">Experience</a>
-            <a href="#education" class="block py-2 text-gray-600 hover:text-[var(--qa-secondary)]">Education</a>
-            <a href="#contact" class="block mt-2 bg-[var(--qa-secondary)] text-white px-4 py-2 rounded-full text-center hover:bg-[var(--qa-primary)]">Contact</a>
+    <header class="bg-[var(--bg-secondary)] shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-6">
+            <nav class="py-4 flex justify-between items-center">
+                <a href="#about" class="text-2xl font-bold text-[var(--text-primary)]">Komal Wagh</a>
+                <div class="hidden md:flex space-x-6 items-center">
+                    <a href="#summary" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition font-medium">Summary</a>
+                    <a href="#skills" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition font-medium">Skills</a>
+                    <a href="#experience" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition font-medium">Experience</a>
+                    <a href="#education" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition font-medium">Education</a>
+                    <a href="#contact" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition font-medium">Contact</a>
+                    <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 transition-transform duration-300 hover:scale-110">
+                        <svg id="theme-icon-sun" class="w-6 h-6 hidden text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 11-1.414-1.414l-.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                        <svg id="theme-icon-moon" class="w-6 h-6 hidden text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    </button>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-[var(--text-primary)] focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
         </div>
     </header>
 
-    <main class="container mx-auto px-6">
+    <main id="main-content" class="container mx-auto px-6 relative z-10 transition-opacity duration-300 ease-in-out">
 
-        <!-- Hero Section -->
-        <section id="about" class="relative min-h-[70vh] flex items-center py-16">
-            <div class="grid md:grid-cols-2 gap-8 items-center w-full">
-                <div class="text-center md:text-left z-10">
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-[var(--qa-primary)] mb-3">Hi, I'm Komal Wagh</h1>
-                    <p class="text-2xl text-[var(--qa-secondary)] font-bold mb-6 h-8 typing" id="job-title"></p>
-                    <div class="mt-8 flex justify-center md:justify-start items-center space-x-3 relative z-20">
-                        <a href="tel:+919082120942" class="flex items-center justify-center w-12 h-12 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-110" aria-label="Call me">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                        </a>
-                        <a href="mailto:waghkomal2003@gmail.com" class="flex items-center justify-center w-12 h-12 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-110" aria-label="Email me">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        </a>
-                        <a href="https://www.linkedin.com/in/komalwagh14/" target="_blank" class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-110" aria-label="LinkedIn Profile">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"/></svg>
-                        </a>
-                    </div>
-                </div>
-                <div class="flex justify-center z-10">
-                     <div class="relative">
-                        <div class="rounded-full shadow-2xl w-64 h-64 md:w-80 md:h-80 object-cover border-8 border-white/50 bg-indigo-200 flex items-center justify-center">
-                            <span class="text-8xl font-bold text-[var(--qa-primary)]">KW</span>
-                        </div>
-                        <div class="absolute -bottom-2 -right-2 bg-yellow-300 text-4xl w-16 h-16 rounded-full flex items-center justify-center shadow-lg border-4 border-white animate-bounce">
-                            🐞
-                        </div>
-                    </div>
-                </div>
+        <section id="about" class="min-h-[70vh] flex items-center py-16">
+            <div class="w-full text-center">
+                <h1 class="text-5xl md:text-7xl font-extrabold animated-gradient-text mb-4">Hi, I'm Komal Wagh</h1>
+                <p class="text-2xl font-bold text-[var(--accent-primary)] mb-8">A Passionate Quality Analyst</p>
             </div>
         </section>
 
-        <!-- Summary Section -->
         <section id="summary" class="py-16">
-            <div class="solid-card p-8 md:p-12 reveal">
-                <h2 class="text-3xl font-bold text-[var(--qa-primary)] mb-6 text-center">Professional Summary</h2>
-                <p class="text-lg leading-relaxed text-center max-w-4xl mx-auto text-gray-700">
+            <div class="glass-card p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-center mb-6 text-[var(--text-primary)] flex items-center justify-center gap-3">
+                    <svg class="w-8 h-8 text-[var(--accent-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Professional Summary
+                </h2>
+                <p class="text-lg leading-relaxed text-center max-w-4xl mx-auto text-[var(--text-secondary)]">
                     Results-driven QA Engineer with 1+ year of experience in manual testing of complex web applications. Deep understanding of the full software development life cycle (SDLC) and all QA phases. Expertise in API testing with Postman, Performance testing with JMeter, and Database testing using SQL. Highly proficient in JIRA for defect tracking, creating detailed test cases, and actively contributing to Agile/Scrum ceremonies to improve development processes.
                 </p>
             </div>
         </section>
 
-        <!-- Skills Section -->
         <section id="skills" class="py-16">
-             <h2 class="text-3xl font-bold text-[var(--qa-primary)] mb-12 text-center reveal">Technical Skills & Expertise</h2>
-            <div class="scroller reveal" data-animated="true">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[var(--text-primary)] flex items-center justify-center gap-3">
+                <svg class="w-8 h-8 text-[var(--accent-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                Technical Skills & Expertise
+            </h2>
+            <div class="scroller" data-animated="true">
                 <div class="scroller-inner">
-                    <!-- Skill Card -->
-                    <div class="solid-card p-6 w-80 flex-shrink-0">
-                        <h3 class="text-xl font-bold text-[var(--qa-primary)] mb-4">🧪 Testing Expertise</h3>
+                    <div class="glass-card p-6 h-48 w-96 flex-shrink-0">
+                        <h3 class="text-xl font-bold text-[var(--accent-secondary)] mb-3">🧪 Testing Expertise</h3>
                         <div class="flex flex-wrap gap-2">
-                            <span class="skill-tag bg-blue-100 text-blue-800">Manual Testing</span>
-                            <span class="skill-tag bg-blue-100 text-blue-800">Functional Testing</span>
-                            <span class="skill-tag bg-blue-100 text-blue-800">API Testing</span>
-                            <span class="skill-tag bg-blue-100 text-blue-800">Performance Testing</span>
-                            <span class="skill-tag bg-blue-100 text-blue-800">Regression Testing</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Manual Testing</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">API Testing</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Performance Testing</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Regression Testing</span>
                         </div>
                     </div>
-                    <!-- Skill Card -->
-                    <div class="solid-card p-6 w-80 flex-shrink-0">
-                        <h3 class="text-xl font-bold text-[var(--qa-primary)] mb-4">⚙️ Tools & Technologies</h3>
+                    <div class="glass-card p-6 h-48 w-96 flex-shrink-0">
+                        <h3 class="text-xl font-bold text-[var(--accent-secondary)] mb-3">⚙️ Tools & Technologies</h3>
                         <div class="flex flex-wrap gap-2">
-                            <span class="skill-tag bg-indigo-100 text-indigo-800">JIRA</span>
-                            <span class="skill-tag bg-indigo-100 text-indigo-800">Postman</span>
-                            <span class="skill-tag bg-indigo-100 text-indigo-800">Selenium</span>
-                            <span class="skill-tag bg-indigo-100 text-indigo-800">JMeter</span>
-                            <span class="skill-tag bg-indigo-100 text-indigo-800">TestNG</span>
-                            <span class="skill-tag bg-indigo-100 text-indigo-800">SQL</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">JIRA</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Postman</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Selenium</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">JMeter</span>
                         </div>
                     </div>
-                    <!-- Skill Card -->
-                    <div class="solid-card p-6 w-80 flex-shrink-0">
-                        <h3 class="text-xl font-bold text-[var(--qa-primary)] mb-4">📊 Methodologies</h3>
+                    <div class="glass-card p-6 h-48 w-96 flex-shrink-0">
+                        <h3 class="text-xl font-bold text-[var(--accent-secondary)] mb-3">📊 Methodologies</h3>
                         <div class="flex flex-wrap gap-2">
-                            <span class="skill-tag bg-purple-100 text-purple-800">Agile/Scrum</span>
-                            <span class="skill-tag bg-purple-100 text-purple-800">SDLC & STLC</span>
-                            <span class="skill-tag bg-purple-100 text-purple-800">Sprint Planning</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Agile/Scrum</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">SDLC & STLC</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Experience Section -->
         <section id="experience" class="py-16">
-            <h2 class="text-3xl font-bold text-[var(--qa-primary)] mb-12 text-center reveal">Professional Experience</h2>
-            <div class="relative border-l-2 border-indigo-200 ml-4 pl-10">
-                <!-- Timeline Item -->
-                <div class="timeline-item mb-12 reveal">
-                    <div class="solid-card p-6">
-                        <h3 class="text-2xl font-bold text-gray-900">Quality Analyst</h3>
-                        <p class="font-semibold text-[var(--qa-secondary)] text-lg">Openspace Services Pvt Ltd</p>
-                        <p class="text-sm text-gray-500 mb-6">August 2024 – Present</p>
-                        
+            <h2 class="text-3xl font-bold text-center mb-12 text-[var(--text-primary)] flex items-center justify-center gap-3">
+                <svg class="w-8 h-8 text-[var(--accent-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                Professional Experience
+            </h2>
+             <div class="relative border-l-2 border-[var(--accent-primary)] ml-4 pl-10">
+                <div class="timeline-item mb-12">
+                    <div class="glass-card p-6">
+                        <h3 class="text-2xl font-bold text-[var(--text-primary)]">Quality Analyst</h3>
+                        <p class="font-semibold text-[var(--accent-primary)] text-lg">Openspace Services Pvt Ltd</p>
+                        <p class="text-sm text-[var(--text-secondary)] mb-6">August 2024 – Present</p>
                         <div class="space-y-6">
                             <div class="border-l-4 border-indigo-500 pl-4">
-                                <h4 class="font-bold text-indigo-800 flex items-center gap-2"><span>🚚</span>Project: FreightGain (Logistics Platform)</h4>
-                                <ul class="list-disc list-inside space-y-2 mt-2 text-gray-600">
+                                <h4 class="font-bold flex items-center gap-2 text-[var(--text-primary)]"><span>🚚</span>Project: FreightGain</h4>
+                                <ul class="list-disc list-inside space-y-2 mt-2 text-[var(--text-secondary)]">
                                     <li>Led QA efforts for a web-based freight forwarding platform, successfully completing testing for the Sea Freight module and currently leading the Air Freight module initiative.</li>
                                     <li>Authored and maintained 150+ detailed test cases and test data for core modules (Booking, Tracking), analyzing execution results to compile comprehensive test reports for stakeholders.</li>
                                     <li>Performed rigorous API testing on 50+ endpoints using Postman to validate data exchange and ensure data integrity between stakeholders.</li>
@@ -247,16 +202,16 @@
                                 </ul>
                             </div>
                             <div class="border-l-4 border-teal-500 pl-4">
-                                <h4 class="font-bold text-teal-800 flex items-center gap-2"><span>⚕️</span>Project: Quantum Corp Health (HealthTech Platform)</h4>
-                                <ul class="list-disc list-inside space-y-2 mt-2 text-gray-600">
+                                <h4 class="font-bold text-teal-600 dark:text-teal-400 flex items-center gap-2"><span>⚕️</span>Project: Quantum Corp Health</h4>
+                                <ul class="list-disc list-inside space-y-2 mt-2 text-[var(--text-secondary)]">
                                     <li>Executed end-to-end manual and database testing (SQL) on a complex HealthTech platform, validating data integrity for AI-generated reports across 700+ cities.</li>
                                     <li>Conducted performance and load testing using JMeter, providing actionable insights that led to a 15% improvement in website responsiveness.</li>
                                     <li>Managed the full defect lifecycle in JIRA, ensuring the accuracy of AI-generated reports and automated presentations.</li>
                                 </ul>
                             </div>
                             <div class="border-l-4 border-purple-500 pl-4">
-                                 <h4 class="font-bold text-purple-800 flex items-center gap-2"><span>🛒</span>Project: E-commerce & CMS Projects (WordPress)</h4>
-                                 <ul class="list-disc list-inside space-y-2 mt-2 text-gray-600">
+                                 <h4 class="font-bold text-purple-600 dark:text-purple-400 flex items-center gap-2"><span>🛒</span>Project: E-commerce & CMS</h4>
+                                 <ul class="list-disc list-inside space-y-2 mt-2 text-[var(--text-secondary)]">
                                     <li>Performed complete end-to-end testing for 5+ client websites from requirement gathering to final delivery.</li>
                                     <li>Executed comprehensive manual testing ensuring full website functionality, cross-browser compatibility, and mobile responsiveness.</li>
                                     <li>Contributed to all Scrum ceremonies to ensure efficient and timely project execution.</li>
@@ -268,89 +223,215 @@
             </div>
         </section>
 
-        <!-- Education Section -->
-        <section id="education" class="py-8">
-            <div class="solid-card p-8 reveal">
-                <div class="border-b-2 border-green-500 pb-4 mb-6">
-                    <h2 class="text-2xl font-bold text-[var(--qa-primary)] flex items-center gap-3">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v9"></path></svg>
-                        Education
-                    </h2>
+        <section id="education" class="py-16">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[var(--text-primary)] flex items-center justify-center gap-3">
+                <svg class="w-8 h-8 text-[var(--accent-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                Education
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 text-center group">
+                    <div class="text-4xl mb-3">🚀</div>
+                    <h3 class="text-lg font-bold text-[var(--text-primary)]">Bachelor of Information Technology</h3>
+                    <p class="text-sm text-[var(--text-secondary)] mt-1">Thakur College of Science and Commerce, Mumbai</p>
+                    <p class="font-bold mt-2 text-[var(--accent-primary)]">CGPA: 8.47</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-[var(--qa-primary)] text-white p-6 rounded-lg text-center">
-                        <h3 class="text-lg font-bold">Bachelor of Information Technology</h3>
-                        <p class="text-sm text-gray-300 mt-1">Thakur College of Science and Commerce, Mumbai</p>
-                        <p class="font-bold mt-2 text-green-300">CGPA: 8.47</p>
-                    </div>
-                    <div class="bg-[var(--qa-primary)] text-white p-6 rounded-lg text-center">
-                        <h3 class="text-lg font-bold">Higher Secondary Education (HSC)</h3>
-                        <p class="text-sm text-gray-300 mt-1">Nirmala Memorial Foundation College, Mumbai</p>
-                        <p class="font-bold mt-2 text-green-300">Score: 84%</p>
-                    </div>
+                <div class="glass-card p-6 text-center group">
+                    <div class="text-4xl mb-3">🎓</div>
+                    <h3 class="text-lg font-bold text-[var(--text-primary)]">Higher Secondary Education (HSC)</h3>
+                    <p class="text-sm text-[var(--text-secondary)] mt-1">Nirmala Memorial Foundation College, Mumbai</p>
+                    <p class="font-bold mt-2 text-[var(--accent-primary)]">Score: 84%</p>
                 </div>
             </div>
         </section>
+
     </main>
 
-    <!-- Contact Section -->
-    <footer id="contact" class="bg-gray-800 text-white mt-16">
+    <footer id="contact" class="text-[var(--text-primary)] mt-16 mx-auto max-w-7xl mb-10">
         <div class="container mx-auto px-6 py-16 text-center">
             <h2 class="text-4xl font-bold mb-4">Ready to Build Quality?</h2>
-            <p class="max-w-2xl mx-auto mb-8 text-gray-300">
+            <p class="max-w-2xl mx-auto mb-8 text-[var(--text-secondary)]">
                 I'm passionate about ensuring software quality and am actively seeking new opportunities. If you have a project or role that could benefit from my skills, I'd love to connect.
             </p>
-            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6 mb-8 text-gray-300">
-                <a href="mailto:waghkomal2003@gmail.com" class="hover:text-amber-300 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>waghkomal2003@gmail.com</a>
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6 mb-8 text-[var(--text-secondary)]">
+                <a href="mailto:waghkomal2003@gmail.com" class="hover:text-[var(--accent-primary)] flex items-center gap-2">
+                    <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                    waghkomal2003@gmail.com
+                </a>
                 <span class="hidden md:block">|</span>
-                <a href="tel:+919082120942" class="hover:text-amber-300 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>+91 9082120942</a>
+                <a href="tel:+919082120942" class="hover:text-[var(--accent-primary)] flex items-center gap-2">
+                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+                    +91 9082120942
+                </a>
                 <span class="hidden md:block">|</span>
-                 <a href="https://www.linkedin.com/in/komalwagh14/" target="_blank" class="hover:text-amber-300 flex items-center gap-2"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"/></svg>LinkedIn</a>
+                 <a href="https://www.linkedin.com/in/komalwagh14/" target="_blank" class="hover:text-[var(--accent-primary)] flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    LinkedIn
+                </a>
             </div>
             <div class="mt-10">
-                <button onclick="window.print()" class="inline-block bg-gray-600 text-white px-8 py-3 rounded-full hover:bg-gray-700 transition duration-300 shadow-lg hover:shadow-xl text-lg">📄 Download/Print</button>
+                <button onclick="window.print()" class="glow-button bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold">📄 Download/Print</button>
             </div>
-        </div>
-        <div class="bg-gray-900 py-4">
-            <p class="text-center text-gray-400 text-sm">&copy; 2025 Komal Wagh. Built with passion for quality.</p>
         </div>
     </footer>
 
     <script>
-        // --- Mobile Menu Toggle ---
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        document.querySelectorAll('#mobile-menu a, .container a[href^="#"]').forEach(link => {
-            link.addEventListener('click', () => setTimeout(() => mobileMenu.classList.add('hidden'), 150));
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Theme Management ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-icon-sun');
+        const moonIcon = document.getElementById('theme-icon-moon');
+        
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                moonIcon.classList.remove('hidden');
+                sunIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                moonIcon.classList.add('hidden');
+                sunIcon.classList.remove('hidden');
+            }
+        };
+
+        const toggleTheme = () => {
+            const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        };
+
+        themeToggle.addEventListener('click', toggleTheme);
+        const storedTheme = localStorage.getItem('theme');
+        const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        applyTheme(storedTheme || preferredTheme);
+
+        // --- 3D Cosmic Journey Background ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('cosmic-canvas'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const loader = new THREE.TextureLoader();
+        const starTexture = loader.load('https://placehold.co/32x32/ffffff/ffffff.png?text=+'); 
+        const earthTexture = loader.load('https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg');
+        const galaxyTexture = loader.load('https://www.eso.org/public/archives/images/large/eso0932a.jpg');
+
+        // Galaxy Background
+        const galaxyGeometry = new THREE.SphereGeometry(2000, 64, 64);
+        const galaxyMaterial = new THREE.MeshBasicMaterial({
+            map: galaxyTexture,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.2
+        });
+        const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+        scene.add(galaxy);
+
+        // Starfield
+        const starVertices = [];
+        for (let i = 0; i < 15000; i++) {
+            const x = THREE.MathUtils.randFloatSpread(2000);
+            const y = THREE.MathUtils.randFloatSpread(2000);
+            const z = THREE.MathUtils.randFloatSpread(2000);
+            starVertices.push(x, y, z);
+        }
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        const starMaterial = new THREE.PointsMaterial({ map: starTexture, size: 0.7, transparent: true, opacity: 0.8 });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // Sun
+        const sun = new THREE.Mesh(
+            new THREE.SphereGeometry(20, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xffddaa, transparent: true, opacity: 0.9 })
+        );
+        sun.position.z = -1000;
+        scene.add(sun);
+
+        // Planets
+        const earth = new THREE.Mesh(
+            new THREE.SphereGeometry(12, 32, 32),
+            new THREE.MeshStandardMaterial({ map: earthTexture, metalness: 0.2, roughness: 0.7 })
+        );
+        earth.position.z = -20;
+        scene.add(earth);
+
+        const otherPlanets = [];
+        const planetData = [
+            { size: 5, distance: -400, speed: 0.001, color: 0xff8844 },
+            { size: 8, distance: -700, speed: 0.0005, color: 0x4488ff }
+        ];
+
+        planetData.forEach(data => {
+            const planet = new THREE.Mesh(
+                new THREE.SphereGeometry(data.size, 16, 16),
+                new THREE.MeshStandardMaterial({ color: data.color, roughness: 0.8 })
+            );
+            const pivot = new THREE.Object3D();
+            pivot.add(planet);
+            scene.add(pivot);
+            planet.position.x = data.distance;
+            otherPlanets.push({ mesh: pivot, speed: data.speed });
         });
 
-        // --- Typing Effect ---
-        const jobTitleEl = document.getElementById('job-title');
-        const textToType = "Quality Analyst";
-        let i = 0;
-        function typeWriter() {
-            if (i < textToType.length) {
-                jobTitleEl.textContent += textToType.charAt(i);
-                i++;
-                setTimeout(typeWriter, 120);
-            } else {
-                 jobTitleEl.classList.remove('typing'); // Stop blinking cursor
-            }
-        }
-        window.addEventListener('load', () => setTimeout(typeWriter, 500));
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 2, 3000);
+        pointLight.position.copy(sun.position);
+        scene.add(pointLight);
 
-        // --- Scroll Animations ---
-        const revealElements = document.querySelectorAll('.reveal');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+        camera.position.z = 1000;
+
+        function moveCamera() {
+            const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+            camera.position.z = 1000 - scrollPercent * 975;
+        }
+        document.body.onscroll = moveCamera;
+        moveCamera();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            earth.rotation.y += 0.001;
+            galaxy.rotation.y += 0.00005;
+            otherPlanets.forEach(p => p.mesh.rotation.y += p.speed);
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- Fade & Jump Scroll Transition ---
+        const mainContent = document.getElementById('main-content');
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    mainContent.style.opacity = 0;
+
+                    setTimeout(() => {
+                        const headerOffset = document.querySelector('header').offsetHeight;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'auto' // Instant jump
+                        });
+
+                        mainContent.style.opacity = 1;
+                    }, 300); // Match this with the transition duration
                 }
             });
-        }, { threshold: 0.1 });
-        revealElements.forEach(el => observer.observe(el));
+        });
 
         // --- Auto-scrolling Skills Section ---
         const scrollers = document.querySelectorAll(".scroller");
@@ -371,7 +452,7 @@
                 });
             });
         }
+    });
     </script>
-
 </body>
 </html>
