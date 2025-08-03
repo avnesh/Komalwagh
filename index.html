@@ -95,6 +95,11 @@
         .scroller[data-animated="true"]:hover .scroller-inner { animation-play-state: paused; }
 
         @keyframes scroll { to { transform: translate(calc(-50% - 0.5rem)); } }
+
+        /* Mobile Menu Overlay */
+        #mobile-menu {
+            transition: opacity 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -116,12 +121,23 @@
                         <svg id="theme-icon-moon" class="w-6 h-6 hidden text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                     </button>
                 </div>
-                <button id="mobile-menu-button" class="md:hidden text-[var(--text-primary)] focus:outline-none">
+                <button id="mobile-menu-button" class="md:hidden text-[var(--text-primary)] focus:outline-none z-50">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </nav>
         </div>
     </header>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[var(--bg-secondary)] z-30 flex flex-col items-center justify-center space-y-8 text-2xl font-bold opacity-0 hidden pointer-events-none">
+        <a href="#summary" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)]">Summary</a>
+        <a href="#skills" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)]">Skills</a>
+        <a href="#experience" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)]">Experience</a>
+        <a href="#education" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)]">Education</a>
+        <a href="#contact" class="text-[var(--text-primary)] hover:text-[var(--accent-primary)]">Contact</a>
+        <div id="mobile-theme-toggle-container" class="pt-8"></div>
+    </div>
+
 
     <main id="main-content" class="container mx-auto px-6 relative z-10 transition-opacity duration-300 ease-in-out">
 
@@ -156,8 +172,7 @@
                         <div class="flex flex-wrap gap-2">
                             <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Manual Testing</span>
                             <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">API Testing</span>
-                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Performance Testing</span>
-                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Regression Testing</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded font-semibold">Performance</span>
                         </div>
                     </div>
                     <div class="glass-card p-6 h-48 w-96 flex-shrink-0">
@@ -280,16 +295,23 @@
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-icon-sun');
         const moonIcon = document.getElementById('theme-icon-moon');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuBtn = document.getElementById('mobile-menu-button');
+        const mobileThemeContainer = document.getElementById('mobile-theme-toggle-container');
+
+        // Clone the theme toggle for mobile menu
+        const mobileThemeToggle = themeToggle.cloneNode(true);
+        mobileThemeContainer.appendChild(mobileThemeToggle);
         
         const applyTheme = (theme) => {
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
-                moonIcon.classList.remove('hidden');
-                sunIcon.classList.add('hidden');
+                document.querySelectorAll('#theme-icon-moon').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('#theme-icon-sun').forEach(el => el.classList.add('hidden'));
             } else {
                 document.documentElement.classList.remove('dark');
-                moonIcon.classList.add('hidden');
-                sunIcon.classList.remove('hidden');
+                document.querySelectorAll('#theme-icon-moon').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('#theme-icon-sun').forEach(el => el.classList.remove('hidden'));
             }
         };
 
@@ -301,10 +323,30 @@
         };
 
         themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+
         const storedTheme = localStorage.getItem('theme');
         const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         applyTheme(storedTheme || preferredTheme);
 
+        // --- Mobile Menu Toggle ---
+        mobileMenuBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenu.classList.add('pointer-events-auto');
+                }, 10);
+            } else {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenu.classList.remove('pointer-events-auto');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+        
         // --- 3D Cosmic Journey Background ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
@@ -313,23 +355,10 @@
 
         const loader = new THREE.TextureLoader();
         const starTexture = loader.load('https://placehold.co/32x32/ffffff/ffffff.png?text=+'); 
-        const earthTexture = loader.load('https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg');
-        const galaxyTexture = loader.load('https://www.eso.org/public/archives/images/large/eso0932a.jpg');
-
-        // Galaxy Background
-        const galaxyGeometry = new THREE.SphereGeometry(2000, 64, 64);
-        const galaxyMaterial = new THREE.MeshBasicMaterial({
-            map: galaxyTexture,
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0.2
-        });
-        const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
-        scene.add(galaxy);
-
+        
         // Starfield
         const starVertices = [];
-        for (let i = 0; i < 15000; i++) {
+        for (let i = 0; i < 5000; i++) { // Reduced star count
             const x = THREE.MathUtils.randFloatSpread(2000);
             const y = THREE.MathUtils.randFloatSpread(2000);
             const z = THREE.MathUtils.randFloatSpread(2000);
@@ -337,7 +366,7 @@
         }
         const starGeometry = new THREE.BufferGeometry();
         starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-        const starMaterial = new THREE.PointsMaterial({ map: starTexture, size: 0.7, transparent: true, opacity: 0.8 });
+        const starMaterial = new THREE.PointsMaterial({ map: starTexture, size: 0.5, transparent: true, opacity: 0.7 });
         const stars = new THREE.Points(starGeometry, starMaterial);
         scene.add(stars);
 
@@ -346,33 +375,42 @@
             new THREE.SphereGeometry(20, 32, 32),
             new THREE.MeshBasicMaterial({ color: 0xffddaa, transparent: true, opacity: 0.9 })
         );
-        sun.position.z = -1000;
+        sun.position.z = -1200;
         scene.add(sun);
 
-        // Planets
-        const earth = new THREE.Mesh(
-            new THREE.SphereGeometry(12, 32, 32),
-            new THREE.MeshStandardMaterial({ map: earthTexture, metalness: 0.2, roughness: 0.7 })
-        );
-        earth.position.z = -20;
-        scene.add(earth);
-
-        const otherPlanets = [];
+        // All 8 Planets
+        const planets = [];
         const planetData = [
-            { size: 5, distance: -400, speed: 0.001, color: 0xff8844 },
-            { size: 8, distance: -700, speed: 0.0005, color: 0x4488ff }
+            { name: 'Mercury', size: 1.5, color: 0x9f7a6d, distance: 50, speed: 0.004 },
+            { name: 'Venus', size: 2.5, color: 0xd4a06a, distance: 90, speed: 0.003 },
+            { name: 'Earth', size: 2.6, texture: loader.load('https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg'), distance: 140, speed: 0.002 },
+            { name: 'Mars', size: 2, color: 0xcf583b, distance: 200, speed: 0.0015 },
+            { name: 'Jupiter', size: 10, color: 0xe0c4a8, distance: 350, speed: 0.001 },
+            { name: 'Saturn', size: 8, color: 0xf0e6c8, distance: 500, speed: 0.0008, hasRing: true },
+            { name: 'Uranus', size: 6, color: 0xafdbf5, distance: 650, speed: 0.0006 },
+            { name: 'Neptune', size: 5.8, color: 0x4a90e2, distance: 800, speed: 0.0004 },
         ];
 
         planetData.forEach(data => {
-            const planet = new THREE.Mesh(
-                new THREE.SphereGeometry(data.size, 16, 16),
-                new THREE.MeshStandardMaterial({ color: data.color, roughness: 0.8 })
-            );
+            const material = data.texture 
+                ? new THREE.MeshStandardMaterial({ map: data.texture, metalness: 0.2, roughness: 0.7 })
+                : new THREE.MeshStandardMaterial({ color: data.color, roughness: 0.8 });
+            
+            const planet = new THREE.Mesh(new THREE.SphereGeometry(data.size, 32, 32), material);
             const pivot = new THREE.Object3D();
             pivot.add(planet);
             scene.add(pivot);
             planet.position.x = data.distance;
-            otherPlanets.push({ mesh: pivot, speed: data.speed });
+
+            if (data.hasRing) {
+                const ringGeometry = new THREE.RingGeometry(data.size * 1.2, data.size * 1.8, 32);
+                const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xaaa_aaa, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = -Math.PI * 0.5;
+                planet.add(ring);
+            }
+
+            planets.push({ mesh: pivot, speed: data.speed });
         });
 
         // Lighting
@@ -382,20 +420,18 @@
         pointLight.position.copy(sun.position);
         scene.add(pointLight);
 
-        camera.position.z = 1000;
+        camera.position.z = 25; // Start at Earth
 
         function moveCamera() {
             const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-            camera.position.z = 1000 - scrollPercent * 975;
+            camera.position.z = 25 + scrollPercent * 1175; // Zoom out to z=1200
         }
         document.body.onscroll = moveCamera;
         moveCamera();
 
         function animate() {
             requestAnimationFrame(animate);
-            earth.rotation.y += 0.001;
-            galaxy.rotation.y += 0.00005;
-            otherPlanets.forEach(p => p.mesh.rotation.y += p.speed);
+            planets.forEach(p => p.mesh.rotation.y += p.speed);
             renderer.render(scene, camera);
         }
         animate();
